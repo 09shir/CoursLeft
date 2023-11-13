@@ -1,0 +1,123 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.Page{
+  height: 100vh;
+  overflow: auto;
+  min-height: 800px;
+  background-image: url(./assets/background.jpeg);
+  background-size: auto 100%;
+  background-position: center;
+}
+
+.float-left {
+  width: 33.3%;
+  float: left;
+  padding: 0px;
+}  
+.float-mid {
+  width: 33.3%;
+  float: left;
+  padding: 0px;
+}  
+.float-right {
+  width: 33.3%;
+  float: left;
+  padding: 0px;
+}  
+
+.ThreeTerms{
+  height: 350px;
+}
+
+html
+{
+    height: 100%;
+}
+body
+{
+    height: 100%;
+}
+
+.container2 {
+  height: 40px;
+  position: relative;
+}
+
+.vertical-center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  right: 40%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.header {
+  width: 100%;
+  padding:5px 0px;
+  text-align: center;
+  background: #4c5270;
+  color: white;
+  height: 60px;
+  position: fixed;
+  font-family: Papyrus;
+  font-size:large;
+}
+
+.course-field-left {
+  width: 40%;
+  float: left;
+  padding: 0px;
+}  
+.button-field-right {
+  width: 10%;
+  padding: 0x;
+}  
+
+.boardIcon {
+  width: 20%;
+  padding: 0x;
+  float: left;
+}
+.boardName {
+  width: 70%;
+  padding: 0px;
+  float: right;
+}
