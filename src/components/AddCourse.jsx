@@ -44,7 +44,7 @@ const AddCourse = () => {
 
     useEffect(() => {
         axios
-          .get("/terms")
+          .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/terms")
           .then((res) => {
             res.data = res.data.filter((item) => item.boardId === boardID)
             setTerms({ terms: res.data }); 
@@ -108,7 +108,7 @@ const AddCourse = () => {
         // check if there are 6 or more courses in selected term
         // check if course about to add repeats with already selected course
         axios
-          .get("/courses")
+          .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/courses")
           .then((res) => { 
             let count = 0
             let repeat = false

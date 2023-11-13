@@ -33,7 +33,7 @@ const Planner = () => {
 
     const refreshPlanner = () => {
         axios
-          .get("/terms")
+          .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/terms")
           .then((res) => {
 
             // get all terms objects on current board
@@ -94,7 +94,7 @@ const Planner = () => {
           })
           .catch((err) => console.log(err));
         axios
-          .get("/courses")
+          .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/courses")
           .then((res) => {console.log(res.data); setCourses(res.data.filter((course) => course.board === boardID))})
           .catch((err) => console.log(err));
         setLoading(false);
@@ -117,7 +117,7 @@ const Planner = () => {
         const config = {
             method: 'delete',
             maxBodyLength: Infinity,
-            url: '/course',
+            url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/course',
             headers: { 
               'Content-Type': 'application/json'
             },
@@ -151,7 +151,7 @@ const Planner = () => {
         const termConfig = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/term',
+            url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/term',
             headers: { 
                 'Content-Type': 'application/json'
               },
@@ -192,7 +192,7 @@ const Planner = () => {
             courseConfig = {
                 method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/course',
+                url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/course',
                 headers: { 
                     'Content-Type': 'application/json'
                   },
