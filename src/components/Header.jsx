@@ -17,11 +17,13 @@ const Header = () => {
     const dispatch = useDispatch();
 
     return(
-        <Navbar bg="light">
+        <Navbar expand="lg" bg="light">
             <Container>
                 <Navbar.Brand href="/">
                     <img width='200' height='50' src={sfu} className="d-inline-block align-top" alt="logo"/>
                 </Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
@@ -130,6 +132,7 @@ const Header = () => {
                         </NavDropdown.Item>
                     </NavDropdown>
                 </Nav>
+                </Navbar.Collapse>
             </Container>
         </Navbar>
     )
