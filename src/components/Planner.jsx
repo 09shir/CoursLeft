@@ -17,7 +17,9 @@ const Planner = () => {
     const [termIdPair, setTermIdPair] = useState([]);       // [[termName, termId], [termName, termId], ... ] 
     const [termsMapping, setTermsMapping] = useState([]);
     const [courses, setCourses] = useState([]);
-    const [isLoading, setLoading] = useState(true)
+    const [isLoading, setLoading] = useState(true);
+    const [isAdding, setAdding] = useState(false);
+    const [isDeleting, setDeleting] = useState(false);
 
     const [uniqueId, setUniqueId] = useState("")
 
@@ -29,6 +31,8 @@ const Planner = () => {
     useEffect(() => {
         refreshPlanner();
         uuidFromV4();
+        setAdding(false);
+        setDeleting(false);
     },[boardID, refreshPlannerListener]);
 
     const refreshPlanner = () => {
@@ -90,7 +94,6 @@ const Planner = () => {
             setTerms(sortedTerms)
             setTermsMapping(newTerms)
             console.log(terms)
-            console.log(termsMapping)
           })
           .catch((err) => console.log(err));
         axios
@@ -142,6 +145,20 @@ const Planner = () => {
             lastTerm = terms[terms.length-1]
         }
         const newTerm = getNextTerm(lastTerm)
+
+        // let duplicate = false;
+
+        // checks for duplicated terms (when spamming create term button it may happen)
+        // axios
+        //     .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/terms")
+        //     .then((res) => { 
+        //         res.data = res.data.filter((item) => item.board === boardID);
+        //         res.data.forEach((term) => {
+        //             if (term.termName === newTerm){
+        //                 duplicate = true;
+        //             }
+        //         })
+        //     })
         const termData = {
             boardId: boardID,
             termId: uniqueId,
@@ -157,14 +174,15 @@ const Planner = () => {
               },
             data : termData
         }
+        // if (!duplicate){
         axios
-            .request(termConfig)
-            .catch(function (error) {
-                console.log(error.request.response);
-                throw(error);
-            })
-            .then((res) => {dispatch(plannerRefresh())})
-
+        .request(termConfig)
+        .catch(function (error) {
+            console.log(error.request.response);
+            throw(error);
+        })
+        .then(() => {dispatch(plannerRefresh())})
+        // }
     }
 
     const deleteTerm = () => {
@@ -214,7 +232,7 @@ const Planner = () => {
         const termConfig = {
             method: 'delete',
             maxBodyLength: Infinity,
-            url: '/term',
+            url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/term',
             headers: { 
               'Content-Type': 'application/json'
             },
@@ -294,12 +312,12 @@ const Planner = () => {
             {/* </ul> */}
             <div className="container2">
                 <div className="vertical-center">
-                    <button className="btn btn-secondary" onClick={() => createTerm()}> 
-                        Add Term
-                    </button>
+                    <button className="btn btn-secondary" onClick={() => {setAdding(true); createTerm()}} disabled={isAdding}> 
+                        {isAdding ? 'Adding...' : 'Add Term'}
+                    </button> 
                     &nbsp;
-                    <button className="btn btn-secondary" onClick={() => deleteTerm()}> 
-                        Delete Term
+                    <button className="btn btn-secondary" onClick={() => {setDeleting(true); deleteTerm()}} disabled={isDeleting}> 
+                        {isDeleting ? 'Deleting...' : 'Delete Term'}
                     </button>
                 </div>
             </div>

@@ -39,8 +39,11 @@ const AddCourse = () => {
     const [showAvailability, setShowAvailability] = useState(false)
     const [maxWorkLoadWarning, setMaxWorkLoadWarning] = useState(false)
     const [repeatWarning, setRepeatWarning] = useState(false)
+    const [emptyInputWarning, setEmptyInputWarning] = useState(false)
 
     const [uniqueId, setUniqueId] = useState("")
+
+    const [isAdding, setAdding] = useState(false)
 
     useEffect(() => {
         axios
@@ -51,6 +54,7 @@ const AddCourse = () => {
             setLoading(false);})
           .catch((err) => console.log(err));
         uuidFromV4();
+        setAdding(false);
           
     }, [refreshPlannerListener, boardID]);
 
@@ -68,6 +72,7 @@ const AddCourse = () => {
         setShowAvailability(false)
         setMaxWorkLoadWarning(false)
         setRepeatWarning(false)
+        setEmptyInputWarning(false)
         e.persist();
 	    setValues((values) => ({
 		    ...values,
@@ -88,6 +93,7 @@ const AddCourse = () => {
     const handleCourseTermInputChange = (e) => {
         setMaxWorkLoadWarning(false)
         setRepeatWarning(false)
+        setEmptyInputWarning(false)
         e.persist();
 	    setValues((values) => ({
 		    ...values,
@@ -97,6 +103,8 @@ const AddCourse = () => {
 
     const submit = () => {
 
+        setAdding(true)
+
         setShowAvailability(false)
 
         const { courseName, courseTerm} = values
@@ -105,6 +113,13 @@ const AddCourse = () => {
             name: courseName.toUpperCase(),
             term: courseTerm
         }
+        // checks if course input is empty
+        if (!ret.name.trim() || !ret.term.trim()) {
+            setEmptyInputWarning(true);
+            setAdding(false);
+            return;
+        }
+
         // check if there are 6 or more courses in selected term
         // check if course about to add repeats with already selected course
         axios
@@ -112,7 +127,7 @@ const AddCourse = () => {
           .then((res) => { 
             let count = 0
             let repeat = false
-            res.data = res.data.filter((item) => item.boardId === boardID)
+            res.data = res.data.filter((item) => item.board === boardID)
             res.data.forEach(course => {
                 if (course.term === ret.term){
                     count++;
@@ -148,10 +163,12 @@ const AddCourse = () => {
             else {
                 // warning term full 
                 if (count >= 6){
+                    setAdding(false);
                     setMaxWorkLoadWarning(true)
                 }
                 // warning repeated term
                 if (repeat){
+                    setAdding(false);
                     setRepeatWarning(true)
                 }
             }
@@ -254,7 +271,9 @@ const AddCourse = () => {
                 </FormGroup>
             </Form>
             <br></br>
-            <Button className="btn btn-primary" onClick={submit}> Add </Button>
+            <Button className="btn btn-primary" onClick={submit} disabled={isAdding}> 
+                {isAdding ? 'Adding' : 'Add'}
+            </Button>
             &nbsp;&nbsp;&nbsp;
             {showPredictButton ? <span>
                 <Button className="btn btn-primary" onClick={checkAvailability}> Predict Availability </Button> 
@@ -302,6 +321,7 @@ const AddCourse = () => {
             }</h5> : null}
             {maxWorkLoadWarning ? <h5><p style={{ fontSize: 11 }} > ⚠ Warning: Course load exceeded maximum allowance for selected term </p></h5> : null}
             {repeatWarning ? <h5><p style={{ fontSize: 11 }} > ⚠ Warning: Course selected repeats with already selected course in same term </p></h5> : null}
+            {emptyInputWarning ? <h5><p style={{ fontSize: 11 }}> ⚠ Warning: Course ID / Term input cannot be empty </p></h5> : null}
         </div>
     )
 }
