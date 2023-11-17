@@ -114,7 +114,7 @@ const AddCourse = () => {
             term: courseTerm
         }
         // checks if course input is empty
-        if (!ret.name.trim() || !ret.term.trim()) {
+        if (!ret.name.trim() || !ret.term.trim() || ret.term === 'Select A Term') {
             setEmptyInputWarning(true);
             setAdding(false);
             return;
