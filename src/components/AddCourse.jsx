@@ -44,6 +44,7 @@ const AddCourse = () => {
     const [uniqueId, setUniqueId] = useState("")
 
     const [isAdding, setAdding] = useState(false)
+    const [isCheckingAva, setCheckingAva] = useState(false)
 
     useEffect(() => {
         axios
@@ -55,6 +56,7 @@ const AddCourse = () => {
           .catch((err) => console.log(err));
         uuidFromV4();
         setAdding(false);
+        setCheckingAva(false);
           
     }, [refreshPlannerListener, boardID]);
 
@@ -104,8 +106,6 @@ const AddCourse = () => {
     const submit = () => {
 
         setAdding(true)
-
-        setShowAvailability(false)
 
         const { courseName, courseTerm} = values
 
@@ -177,6 +177,8 @@ const AddCourse = () => {
     
     const checkAvailability = async () => {
 
+        setCheckingAva(true);
+
         let predictedTerms = []
         let pastTerms = []
         await predict(values.courseName).then((val) => {
@@ -193,6 +195,7 @@ const AddCourse = () => {
         console.log(availabilitySection)
 
         setShowAvailability(true)
+        setCheckingAva(false);
     }
 
     if (isLoading) {
@@ -276,7 +279,9 @@ const AddCourse = () => {
             </Button>
             &nbsp;&nbsp;&nbsp;
             {showPredictButton ? <span>
-                <Button className="btn btn-primary" onClick={checkAvailability}> Predict Availability </Button> 
+                <Button className="btn btn-primary" onClick={checkAvailability} disabled={isCheckingAva}>
+                     {isCheckingAva ? 'Predicting...' : 'Predict Availability'}
+                </Button> 
                 &nbsp;&nbsp;
                 <Tooltip placement="top" title={"Predicts the terms which the course will be available"}>
                     <IconButton size="small">

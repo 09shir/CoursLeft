@@ -27,93 +27,45 @@ const Header = () => {
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
-                {boardID === "1" ? 
-                    <Nav expand="lg" className="me-3">
-                        <Nav.Link onClick={() => {dispatch(setBoard("1"))}}> 
-                            <button className="btn btn-secondary">
-                                <span className="boardIcon">
-                                    <CalendarMonthIcon/>
-                                </span>
-                                &nbsp;
-                                <span className="boardName">
-                                    <b>Planner&nbsp;1</b>
-                                </span>
-                            </button>
-                        </Nav.Link>
-                    </Nav>
-                    :
-                    <Nav expand="lg" className="me-3">
-                        <Nav.Link onClick={() => {dispatch(setBoard("1"))}}> 
-                            <button className="btn">
-                                <span className="boardIcon">
-                                    <CalendarMonthIcon/>
-                                </span>
-                                &nbsp;
-                                <span className="boardName">
-                                    <b>Planner&nbsp;1</b>
-                                </span>
-                            </button>
-                        </Nav.Link>
-                    </Nav>
-                }
-                {boardID === "2" ? 
-                    <Nav expand="lg" className="me-3">
-                        <Nav.Link onClick={() => {dispatch(setBoard("2"))}}> 
-                            <button className="btn btn-secondary">
-                                <span className="boardIcon">
-                                    <CalendarMonthIcon/>
-                                </span>
-                                &nbsp;
-                                <span className="boardName">
-                                    <b>Planner&nbsp;2</b>
-                                </span>
-                            </button>
-                        </Nav.Link>
-                    </Nav>
-                    :
-                    <Nav expand="lg" className="me-3">
-                        <Nav.Link onClick={() => {dispatch(setBoard("2"))}}> 
-                            <button className="btn">
-                                <span className="boardIcon">
-                                    <CalendarMonthIcon/>
-                                </span>
-                                &nbsp;
-                                <span className="boardName">
-                                    <b>Planner&nbsp;2</b>
-                                </span>
-                            </button>
-                        </Nav.Link>
-                    </Nav>
-                }
-                {boardID === "3" ? 
-                    <Nav expand="lg" className="me-3">
-                        <Nav.Link onClick={() => {dispatch(setBoard("3"))}}> 
-                            <button className="btn btn-secondary">
-                                <span className="boardIcon">
-                                    <CalendarMonthIcon/>
-                                </span>
-                                &nbsp;
-                                <span className="boardName">
-                                    <b>Planner&nbsp;3</b>
-                                </span>
-                            </button>
-                        </Nav.Link>
-                    </Nav>
-                    :
-                    <Nav expand="lg" className="me-3">
-                        <Nav.Link onClick={() => {dispatch(setBoard("3"))}}> 
-                            <button className="btn">
-                                <span className="boardIcon">
-                                    <CalendarMonthIcon/>
-                                </span>
-                                &nbsp;
-                                <span className="boardName">
-                                    <b>Planner&nbsp;3</b>
-                                </span>
-                            </button>
-                        </Nav.Link>
-                    </Nav>
-                }
+                <Nav expand="lg" className="me-3">
+                    <Nav.Link onClick={() => {dispatch(setBoard("1"))}}> 
+                        <button className={`btn ${boardID === "1" ? 'btn-secondary' : ''}`}>
+                            <span className="boardIcon">
+                                <CalendarMonthIcon/>
+                            </span>
+                            &nbsp;
+                            <span className="boardName">
+                                <b>Planner&nbsp;1</b>
+                            </span>
+                        </button>
+                    </Nav.Link>
+                </Nav>
+                <Nav expand="lg" className="me-3">
+                    <Nav.Link onClick={() => {dispatch(setBoard("2"))}}> 
+                        <button className={`btn ${boardID === "2" ? 'btn-secondary' : ''}`}>
+                            <span className="boardIcon">
+                                <CalendarMonthIcon/>
+                            </span>
+                            &nbsp;
+                            <span className="boardName">
+                                <b>Planner&nbsp;2</b>
+                            </span>
+                        </button>
+                    </Nav.Link>
+                </Nav>
+                <Nav expand="lg" className="me-3">
+                    <Nav.Link onClick={() => {dispatch(setBoard("3"))}}> 
+                        <button className={`btn ${boardID === "3" ? 'btn-secondary' : ''}`}>
+                            <span className="boardIcon">
+                                <CalendarMonthIcon/>
+                            </span>
+                            &nbsp;
+                            <span className="boardName">
+                                <b>Planner&nbsp;3</b>
+                            </span>
+                        </button>
+                    </Nav.Link>
+                </Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
