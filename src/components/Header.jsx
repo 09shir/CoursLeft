@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setBoard } from "../redux/board"
 
 
-const Header = () => {
+const Header = ({ user, signOut}) => {
 
     const boardID = useSelector((state) => state.boardCounter.board);
     const dispatch = useDispatch();
@@ -83,6 +83,7 @@ const Header = () => {
                             Email
                         </NavDropdown.Item>
                     </NavDropdown>
+                    <Nav.Link onClick={signOut} target="_blank">Sign Out</Nav.Link>
                 </Nav>
                 </Navbar.Collapse>
             </Container>

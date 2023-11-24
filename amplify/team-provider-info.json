@@ -1,0 +1,31 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-coursleft-dev-31805-authRole",
+      "UnauthRoleArn": "arn:aws:iam::268449935888:role/amplify-coursleft-dev-31805-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::268449935888:role/amplify-coursleft-dev-31805-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-coursleft-dev-31805-deployment",
+      "UnauthRoleName": "amplify-coursleft-dev-31805-unauthRole",
+      "StackName": "amplify-coursleft-dev-31805",
+      "StackId": "arn:aws:cloudformation:us-west-2:268449935888:stack/amplify-coursleft-dev-31805/505a0ac0-86cd-11ee-9d25-02a9427df8e9",
+      "AmplifyAppId": "dt24h330wpoo6",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-coursleft-dev-31805-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "coursleft1c67a1811c67a181": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "coursleft1c67a1811c67a181PostConfirmation": {
+          "deploymentBucketName": "amplify-coursleft-dev-31805-deployment",
+          "s3Key": "amplify-builds/coursleft1c67a1811c67a181PostConfirmation-5458386977384e4a2b36-build.zip"
+        }
+      },
+      "api": {
+        "coursleft": {}
+      }
+    }
+  }
+}

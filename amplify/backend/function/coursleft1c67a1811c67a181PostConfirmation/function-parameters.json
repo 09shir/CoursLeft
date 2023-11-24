@@ -1,0 +1,16 @@
+{
+  "trigger": true,
+  "modules": [
+    "custom"
+  ],
+  "parentResource": "coursleft1c67a1811c67a181",
+  "functionName": "coursleft1c67a1811c67a181PostConfirmation",
+  "resourceName": "coursleft1c67a1811c67a181PostConfirmation",
+  "parentStack": "auth",
+  "triggerEnvs": "[]",
+  "triggerDir": "/snapshot/amplify-cli/build/node_modules/@aws-amplify/amplify-category-auth/provider-utils/awscloudformation/triggers/PostConfirmation",
+  "triggerTemplate": "PostConfirmation.json.ejs",
+  "triggerEventPath": "PostConfirmation.event.json",
+  "roleName": "coursleft1c67a1811c67a181PostConfirmation",
+  "skipEdit": true
+}

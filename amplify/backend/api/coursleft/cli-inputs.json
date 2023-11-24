@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "coursleft",
+    "serviceName": "AppSync",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authcoursleft1c67a1811c67a181"
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "API_KEY",
+        "expirationTime": 7,
+        "apiKeyExpirationDate": "2023-11-26T11:38:53.339Z",
+        "keyDescription": ""
+      },
+      {
+        "mode": "AWS_IAM"
+      }
+    ],
+    "conflictResolution": {}
+  }
+}

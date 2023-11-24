@@ -10,8 +10,20 @@ import { plannerRefresh } from "../redux/refresh";
 
 import { v4 as uuid} from 'uuid';
 
+import { Amplify } from 'aws-amplify';
+import '@aws-amplify/ui-react/styles.css';
+import config from '../amplifyconfiguration.json'
 
-const Planner = () => {
+import { listTerms, getCoursesbyTerm } from '../graphql/queries'
+import { deleteCourse, createTerm, deleteTerm } from '../graphql/mutations'
+import { generateClient } from 'aws-amplify/api'
+
+Amplify.configure(config);
+const client = generateClient()
+
+
+
+const Planner = ({ user }) => {
 
     const [terms, setTerms] = useState([]);
     const [termIdPair, setTermIdPair] = useState([]);       // [[termName, termId], [termName, termId], ... ] 
@@ -27,13 +39,89 @@ const Planner = () => {
     const refreshPlannerListener = useSelector((state) => state.refreshBoard.value);
     const dispatch = useDispatch();
 
-
     useEffect(() => {
-        refreshPlanner();
+        // setLoading(true)
+        getTermsCoursesfromGraphQL();
+        // refreshPlanner();
         uuidFromV4();
+    },[boardID, refreshPlannerListener]);
+
+    const getTermsCoursesfromGraphQL = async () => {
+        const data = await client.graphql({query: listTerms})
+
+        // get all terms objects
+        let allTerms = data.data.listTerms.items;
+        
+        // get all terms objects on current board
+        let sameBoard = allTerms.filter((term) => term.boardTermsId === `${user.userId}-board${boardID}`)
+
+        // save term name/id pairs for deleting courses later
+        let tmpTermIdPair = []
+        sameBoard.forEach((term) => {
+            tmpTermIdPair.push([term.name, term.id])
+        })
+        setTermIdPair(tmpTermIdPair)
+
+        // get all term names
+        let terms = []
+        sameBoard.forEach((term) => {
+            terms.push(term.name);
+        })
+
+        // sort terms
+        let sortedTerms = sortTerms(terms);
+
+        // -----------------------------------------------------------------
+        // from [summer 2023, fall 2023, ... fall 2024]
+
+        // to [[summer 2023, fall 2023, spring 2024]
+        //     [summer 2024, fall 2024]
+        // -----------------------------------------------------------------
+
+        let newTerms = []
+        let tmpTerms = []
+        for (let i = 0; i < Math.ceil(sortedTerms.length/3); i++){
+            for (let j = 0; j < 3; j++){
+                if (sortedTerms[i*3+j] !== undefined){
+                    tmpTerms.push(sortedTerms[i*3+j])
+                }
+            } 
+            newTerms.push(tmpTerms)
+            tmpTerms = []
+        }
+
+        // get all courses
+        let courses = []
+        let tmpCourses = []
+        for (let i = 0; i < sameBoard.length; i++){
+            tmpCourses = await client.graphql({
+                query: getCoursesbyTerm,
+                variables: {
+                    id: sameBoard[i].id
+                }
+            })
+            // courses.push(tmpCourses.data.getTerm.courses.items);
+            tmpCourses.data.getTerm.courses.items.forEach((course) => {
+                courses.push({
+                    id: course.id,
+                    name: course.name,
+                    termId: sameBoard[i].id,
+                    term: sameBoard[i].name,
+                    boardId: sameBoard[i].boardTermsId
+                });
+            })
+        }
+
+        setTerms(sortedTerms)
+        setTermsMapping(newTerms)
+        setCourses(courses)
+        // console.log(terms)
+        // console.log(courses)
+        // console.log(newTerms)
+        setLoading(false);
         setAdding(false);
         setDeleting(false);
-    },[boardID, refreshPlannerListener]);
+    }
 
     const refreshPlanner = () => {
         axios
@@ -109,33 +197,35 @@ const Planner = () => {
     }
 
     if (isLoading) {
-        return <div className="App">Loading...</div>;
+        // return <div className="App">Loading...</div>;
+        return (
+            <div className="container2">
+                <div className="vertical-center">
+                    <button className="btn btn-secondary" onClick={() => {setAdding(true); handleTermCreation()}} disabled={isAdding}> 
+                        {isAdding ? 'Adding...' : 'Add Term'}
+                    </button> 
+                    &nbsp;
+                    <button className="btn btn-secondary" onClick={() => {setDeleting(true); handleTermDeletion()}} disabled={isDeleting}> 
+                        {isDeleting ? 'Deleting...' : 'Delete Term'}
+                    </button>
+                </div>
+            </div>
+        )
     }
 
-    const handleCourseDelete = (item) => {
-        console.log(item.courseId)
-        const data = {
-            courseId: item.courseId
-        }
-        const config = {
-            method: 'delete',
-            maxBodyLength: Infinity,
-            url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/course',
-            headers: { 
-              'Content-Type': 'application/json'
-            },
-            data : data
-          };
-          axios.request(config)
-            .catch(function (error) {
-                // console.log("Failed to delete a course: " + error)})
-                console.log(error.request.response);
-                throw(error);
-            })
-            .then((res) => {dispatch(plannerRefresh())})
+    const handleCourseDelete = async (item) => {
+        await client.graphql({
+            query: deleteCourse,
+            variables: {
+                input: {
+                    id: item.id
+                }
+            }
+        })
+        dispatch(plannerRefresh())
     };
 
-    const createTerm = () => {
+    const handleTermCreation = async () => {
         let lastTerm = ''
         if (terms.length === 0){
             lastTerm = getCurrentTerm() + ' ' + getCurrentYear()
@@ -146,46 +236,22 @@ const Planner = () => {
         }
         const newTerm = getNextTerm(lastTerm)
 
-        // let duplicate = false;
+        await client.graphql({
+            query: createTerm,
+            variables: {
+                input: {
+                    id: uniqueId,
+                    name: newTerm,
+                    boardTermsId: `${user.userId}-board${boardID}`
+                }
+            }
+        });
+        
+        dispatch(plannerRefresh())
 
-        // checks for duplicated terms (when spamming create term button it may happen)
-        // axios
-        //     .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/terms")
-        //     .then((res) => { 
-        //         res.data = res.data.filter((item) => item.board === boardID);
-        //         res.data.forEach((term) => {
-        //             if (term.termName === newTerm){
-        //                 duplicate = true;
-        //             }
-        //         })
-        //     })
-        const termData = {
-            boardId: boardID,
-            termId: uniqueId,
-            termName: newTerm
-        }
-        console.log(termData)
-        const termConfig = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/term',
-            headers: { 
-                'Content-Type': 'application/json'
-              },
-            data : termData
-        }
-        // if (!duplicate){
-        axios
-        .request(termConfig)
-        .catch(function (error) {
-            console.log(error.request.response);
-            throw(error);
-        })
-        .then(() => {dispatch(plannerRefresh())})
-        // }
     }
 
-    const deleteTerm = () => {
+    const handleTermDeletion = async () => {
         if (terms.length === 0){
             return
         }
@@ -200,64 +266,60 @@ const Planner = () => {
 
         let deleteCourses = courses.filter((course) => course.term === lastTerm)
 
-        let courseData = {}
-        let courseConfig = {}
-
-        deleteCourses.forEach((course) => {
-            courseData = {
-                courseId: course.courseId
-            };
-            courseConfig = {
-                method: 'delete',
-                maxBodyLength: Infinity,
-                url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/course',
-                headers: { 
-                    'Content-Type': 'application/json'
-                  },
-                data : courseData
-            }
-            axios
-                .request(courseConfig)
-                .catch(function (error) {
-                // console.log("Failed to delete a course: " + error)})
-                    console.log(error.request.response);
-                    throw(error);
-                })
+        deleteCourses.forEach( async (course) => {
+            await client.graphql({
+                query: deleteCourse,
+                variables: {
+                    input: {
+                        id: course.id
+                    }
+                }
+            })
         })
 
-        const termData = {
-            termId: lastTermId
-        }
-        console.log(lastTerm)
-        const termConfig = {
-            method: 'delete',
-            maxBodyLength: Infinity,
-            url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/term',
-            headers: { 
-              'Content-Type': 'application/json'
-            },
-            data : termData
-        };
-        axios.request(termConfig)
-            .catch(function (error) {
-            // console.log("Failed to delete a term: " + error)})
-                console.log(error.request.response);
-                throw(error);
-            })
-            .then((res) => {dispatch(plannerRefresh())})
+        await client.graphql({
+            query: deleteTerm,
+            variables: {
+                input: {
+                    id: lastTermId
+                }
+            }
+        })
+        dispatch(plannerRefresh())
     }
 
+    // const RenderCourse = (item) => {
+    //     const [color, setColor] = useState('black');
+
+    //     const changeColor = () => {
+    //         setColor(color === 'black' ? 'gray' : 'black');
+    //     }
+
+    //     return (
+    //         <tr key={item.id}>
+    //             <span className='course-field-left'>
+    //                 {item.name}
+    //             </span>
+    //             <span className='button-field-right'>
+    //                 <Tooltip placement="right" title={"Remove " + item.name}>
+    //                     <IconButton onClick={() => {changeColor(); handleCourseDelete(item)}}>
+    //                         <BackspaceIcon fontSize="medium"/>
+    //                     </IconButton>
+    //                 </Tooltip>
+    //             </span>
+    //         </tr>
+    //     )
+    // }
+
     const renderCourses = (term) => {
-        const items = courses.filter((item) => item.term === term)
+        const items = courses.filter((item) => item.term === term && item.boardId === `${user.userId}-board${boardID}`)
         return items.map((item) => (
-            <tr key={item.courseId}>
+            <tr key={item.id}>
                 <span className='course-field-left'>
-                    {item.courseName}
+                    {item.name}
                 </span>
                 <span className='button-field-right'>
-                    {/* <button className="btn btn-outline-danger"
-                        onClick={() => this.handleCourseDelete(item)}> Delete </button> */}
-                    <Tooltip placement="right" title={"Remove " + item.courseName}>
+                    <Tooltip placement="right" title={"Remove " + item.name}>
                         <IconButton onClick={() => handleCourseDelete(item)}>
                             <BackspaceIcon fontSize="medium"/>
                         </IconButton>
@@ -312,15 +374,17 @@ const Planner = () => {
             {/* </ul> */}
             <div className="container2">
                 <div className="vertical-center">
-                    <button className="btn btn-secondary" onClick={() => {setAdding(true); createTerm()}} disabled={isAdding}> 
+                    <button className="btn btn-secondary" onClick={() => {setAdding(true); handleTermCreation()}} disabled={isAdding}> 
                         {isAdding ? 'Adding...' : 'Add Term'}
                     </button> 
                     &nbsp;
-                    <button className="btn btn-secondary" onClick={() => {setDeleting(true); deleteTerm()}} disabled={isDeleting}> 
+                    <button className="btn btn-secondary" onClick={() => {setDeleting(true); handleTermDeletion()}} disabled={isDeleting}> 
                         {isDeleting ? 'Deleting...' : 'Delete Term'}
                     </button>
                 </div>
             </div>
+            <h3>User ID: {user.userId}</h3>
+            <h3>Username:  {user.username}</h3>
             <br></br><br></br><br></br>
         </div>
     )

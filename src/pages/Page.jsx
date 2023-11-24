@@ -6,19 +6,19 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-export default function Page () {
+export default function Page ({ signOut, user }) {
     return (
         <div data-testid="page">
-            <Header/>
+            <Header user={user} signOut={signOut}/>
             <br></br>
             <div>
                 <Container>
                     <Row>
                         <Col xs={9}>
-                            <Planner/>
+                            <Planner user={user}/>
                         </Col>
                         <Col xs={3}>
-                            <AddCourse/>
+                            <AddCourse user={user}/>
                         </Col>
                     </Row>
                 </Container>

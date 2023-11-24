@@ -1,0 +1,86 @@
+{
+  "version": "1",
+  "cognitoConfig": {
+    "identityPoolName": "coursleft1c67a181_identitypool_1c67a181",
+    "allowUnauthenticatedIdentities": true,
+    "resourceNameTruncated": "coursl1c67a181",
+    "userPoolName": "coursleft1c67a181_userpool_1c67a181",
+    "autoVerifiedAttributes": [
+      "email"
+    ],
+    "mfaConfiguration": "OFF",
+    "mfaTypes": [
+      "SMS Text Message"
+    ],
+    "smsAuthenticationMessage": "Your authentication code is {####}",
+    "smsVerificationMessage": "Your verification code is {####}",
+    "emailVerificationSubject": "Your verification code",
+    "emailVerificationMessage": "Your verification code is {####}",
+    "defaultPasswordPolicy": false,
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": [],
+    "requiredAttributes": [
+      "email"
+    ],
+    "aliasAttributes": [],
+    "userpoolClientGenerateSecret": false,
+    "userpoolClientRefreshTokenValidity": 30,
+    "userpoolClientWriteAttributes": [
+      "email"
+    ],
+    "userpoolClientReadAttributes": [
+      "email"
+    ],
+    "userpoolClientLambdaRole": "coursl1c67a181_userpoolclient_lambda_role",
+    "userpoolClientSetAttributes": false,
+    "sharedId": "1c67a181",
+    "resourceName": "coursleft1c67a1811c67a181",
+    "authSelections": "identityPoolAndUserPool",
+    "useDefault": "manual",
+    "userPoolGroups": true,
+    "adminQueries": false,
+    "triggers": {
+      "PostConfirmation": [
+        "custom"
+      ]
+    },
+    "hostedUI": false,
+    "userPoolGroupList": [
+      "Admin"
+    ],
+    "serviceName": "Cognito",
+    "usernameCaseSensitive": false,
+    "useEnabledMfas": true,
+    "authRoleArn": {
+      "Fn::GetAtt": [
+        "AuthRole",
+        "Arn"
+      ]
+    },
+    "unauthRoleArn": {
+      "Fn::GetAtt": [
+        "UnauthRole",
+        "Arn"
+      ]
+    },
+    "breakCircularDependency": true,
+    "dependsOn": [
+      {
+        "category": "function",
+        "resourceName": "coursleft1c67a1811c67a181PostConfirmation",
+        "triggerProvider": "Cognito",
+        "attributes": [
+          "Arn",
+          "Name"
+        ]
+      }
+    ],
+    "permissions": [],
+    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"coursleft1c67a1811c67a181PostConfirmation\"\n  }\n]",
+    "authProviders": [],
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    },
+    "thirdPartyAuth": false
+  }
+}

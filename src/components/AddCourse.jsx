@@ -19,8 +19,19 @@ import { plannerRefresh } from "../redux/refresh"
 
 import { v4 as uuid} from 'uuid';
 
+import { Amplify } from 'aws-amplify';
+import '@aws-amplify/ui-react/styles.css';
+import config from '../amplifyconfiguration.json'
 
-const AddCourse = () => {
+import { getTermsbyBoard, getCoursesbyTerm } from '../graphql/queries'
+import { createCourse } from '../graphql/mutations'
+import { generateClient } from 'aws-amplify/api'
+
+Amplify.configure(config);
+const client = generateClient()
+
+
+const AddCourse = ({ user }) => {
 
     const boardID = useSelector((state) => state.boardCounter.board);
     const refreshPlannerListener = useSelector((state) => state.refreshBoard.value);
@@ -47,22 +58,39 @@ const AddCourse = () => {
     const [isCheckingAva, setCheckingAva] = useState(false)
 
     useEffect(() => {
-        axios
-          .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/terms")
-          .then((res) => {
-            res.data = res.data.filter((item) => item.boardId === boardID)
-            setTerms({ terms: res.data }); 
-            setLoading(false);})
-          .catch((err) => console.log(err));
+        // axios
+        //   .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/terms")
+        //   .then((res) => {
+        //     res.data = res.data.filter((item) => item.boardId === boardID)
+        //     setTerms({ terms: res.data }); 
+        //     setLoading(false);})
+        //   .catch((err) => console.log(err));
+
+        getTerms()
+
         uuidFromV4();
-        setAdding(false);
-        setCheckingAva(false);
           
     }, [refreshPlannerListener, boardID]);
 
+    const getTerms = async () => {
+        await client.graphql({
+            query: getTermsbyBoard,
+            variables: {
+                id: `${user.userId}-board${boardID}`
+            }
+        }).then((res) => {
+            let data = res.data.getBoard.terms.items
+            console.log(data)
+            setTerms(data)
+            setLoading(false)
+        })
+        setAdding(false);
+        setCheckingAva(false);
+    }
+
     const [values, setValues] = useState({
-        courseName: '',
-        courseTerm: ''
+        courseName: '', 
+        courseTerm: '' // index of storedTerms
     })
 
     const uuidFromV4 = () => {
@@ -103,18 +131,15 @@ const AddCourse = () => {
 	    }));
     }
 
-    const submit = () => {
+    const submit = async () => {
 
         setAdding(true)
 
-        const { courseName, courseTerm} = values
+        const courseName = values.courseName.toUpperCase();
+        const courseTerm = values.courseTerm;
 
-        const ret = {
-            name: courseName.toUpperCase(),
-            term: courseTerm
-        }
         // checks if course input is empty
-        if (!ret.name.trim() || !ret.term.trim() || ret.term === 'Select A Term') {
+        if (!courseName.trim() || courseTerm === ''){
             setEmptyInputWarning(true);
             setAdding(false);
             return;
@@ -122,57 +147,50 @@ const AddCourse = () => {
 
         // check if there are 6 or more courses in selected term
         // check if course about to add repeats with already selected course
-        axios
-          .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/courses")
-          .then((res) => { 
-            let count = 0
-            let repeat = false
-            res.data = res.data.filter((item) => item.board === boardID)
-            res.data.forEach(course => {
-                if (course.term === ret.term){
-                    count++;
-                    if (course.courseName === ret.name){
-                        repeat = true
-                    }
+        let repeat = false;
+        let tooManyCourses = false;
+        
+        await client.graphql({
+            query: getCoursesbyTerm,
+            variables: {
+                id: courseTerm
+            }
+        }).then((res) => {
+
+            const courses = res.data.getTerm.courses.items
+
+            if (courses.length >= 6){
+                tooManyCourses = true
+            }
+            
+            courses.forEach( course => {
+                if (course.name === courseName){
+                    repeat = true
                 }
             })
-            if (count < 6 && !repeat){
-                const data = {
-                    courseId: uniqueId,
-                    board: boardID,
-                    term: ret.term,
-                    courseName: ret.name
-                };
-                const config = {
-                    method: 'post',
-                    maxBodyLength: Infinity,
-                    url: 'https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/course',
-                    headers: { 
-                      'Content-Type': 'application/json'
-                    },
-                    data: data
-                };
-                axios
-                    .request(config)
-                    .catch(function (error) {
-                        console.log(error);
-                        // throw(error);
-                    })
-                    .then((res) => {dispatch(plannerRefresh())})
-            }
-            else {
-                // warning term full 
-                if (count >= 6){
-                    setAdding(false);
-                    setMaxWorkLoadWarning(true)
-                }
-                // warning repeated term
-                if (repeat){
-                    setAdding(false);
-                    setRepeatWarning(true)
+        })
+
+        if (repeat){
+            setAdding(false);
+            setRepeatWarning(true)
+            return
+        }
+        if (tooManyCourses){
+            setAdding(false);
+            setMaxWorkLoadWarning(true)
+            return
+        }
+
+        await client.graphql({
+            query: createCourse,
+            variables: {
+                input: {
+                    id: uniqueId,
+                    name: courseName,
+                    termCoursesId: courseTerm
                 }
             }
-          })
+        }).then(() => {dispatch(plannerRefresh())});
     }
     
     const checkAvailability = async () => {
@@ -203,15 +221,15 @@ const AddCourse = () => {
     }
 
     const mappingTerms = () => {
-        let storedTerms = terms.terms
+        let storedTerms = terms
         
         // sort terms
         storedTerms.sort((t1, t2) => {
 
             const termValues = { 'Spring': 1, 'Summer': 2, 'Fall': 3 };
 
-            let term1 = splitYearTerm(t1.termName);
-            let term2 = splitYearTerm(t2.termName);
+            let term1 = splitYearTerm(t1.name);
+            let term2 = splitYearTerm(t2.name);
 
             // term1 = ['2023', 'spring']
             term1[1] = termValues[term1[1]] || 0; 
@@ -226,7 +244,7 @@ const AddCourse = () => {
             }
         })
         return storedTerms?.map((term) => (
-            <option key={term.termName} value={term.termName}>{term.termName}</option>
+            <option key={term.name} value={term.id}>{term.name}</option>
         ))
     }
 
