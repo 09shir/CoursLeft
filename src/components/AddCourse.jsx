@@ -58,18 +58,8 @@ const AddCourse = ({ user }) => {
     const [isCheckingAva, setCheckingAva] = useState(false)
 
     useEffect(() => {
-        // axios
-        //   .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/terms")
-        //   .then((res) => {
-        //     res.data = res.data.filter((item) => item.boardId === boardID)
-        //     setTerms({ terms: res.data }); 
-        //     setLoading(false);})
-        //   .catch((err) => console.log(err));
-
         getTerms()
-
         uuidFromV4();
-          
     }, [refreshPlannerListener, boardID]);
 
     const getTerms = async () => {
@@ -235,8 +225,6 @@ const AddCourse = ({ user }) => {
             term1[1] = termValues[term1[1]] || 0; 
             term2[1] = termValues[term2[1]] || 0; 
 
-            // const termValue = termValues[term] || 0;
-
             if (term1[0] !== term2[0]){
                 return term1[0] - term2[0];
             } else {
@@ -286,7 +274,7 @@ const AddCourse = ({ user }) => {
                         onChange={handleCourseTermInputChange}
                         placeholder="Select Term"
                         aria-label="Default select example">
-                        <option>Select A Term</option>
+                        <option value=''>Select A Term</option>
                         {mappingTerms()}
                     </Form.Select>
                 </FormGroup>
@@ -321,10 +309,7 @@ const AddCourse = ({ user }) => {
                     title={
                         <React.Fragment>
                             <p><b>
-                                {/* {values.courseName.toUpperCase()}'s Available Terms ({availabilitySection.pastTerms[availabilitySection.pastTerms.length-1][0]} ~ {}
-                                {availabilitySection.pastTerms[0][0]}):  */}
                                 {values.courseName.toUpperCase()}'s Available Terms (2022-2024)
-                                {/* {values.courseName.toUpperCase()}'s availability since 2014: */}
                             </b></p>
                             {availabilitySection.pastTerms.length === 0 ? <>Never Offered</> : 
                                 <thead>

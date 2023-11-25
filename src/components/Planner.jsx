@@ -100,7 +100,6 @@ const Planner = ({ user }) => {
                     id: sameBoard[i].id
                 }
             })
-            // courses.push(tmpCourses.data.getTerm.courses.items);
             tmpCourses.data.getTerm.courses.items.forEach((course) => {
                 courses.push({
                     id: course.id,
@@ -115,9 +114,6 @@ const Planner = ({ user }) => {
         setTerms(sortedTerms)
         setTermsMapping(newTerms)
         setCourses(courses)
-        // console.log(terms)
-        // console.log(courses)
-        // console.log(newTerms)
         setLoading(false);
         setAdding(false);
         setDeleting(false);
@@ -144,18 +140,6 @@ const Planner = ({ user }) => {
             sameBoard.forEach((data) => {
                 terms.push(data.termName);
             })
-
-            // get all terms
-
-            // let uniqueTerms = []
-
-            // terms.forEach((term) => {
-            //     if (!uniqueTerms.includes(term)){
-            //         uniqueTerms.push(term);
-            //     }
-            // })
-
-            // tmpNewTerms = terms.filter((item) => tmpNewTerms.indexOf(item) <= 0);
 
             // sort terms
             let sortedTerms = sortTerms(terms);
@@ -288,29 +272,6 @@ const Planner = ({ user }) => {
         dispatch(plannerRefresh())
     }
 
-    // const RenderCourse = (item) => {
-    //     const [color, setColor] = useState('black');
-
-    //     const changeColor = () => {
-    //         setColor(color === 'black' ? 'gray' : 'black');
-    //     }
-
-    //     return (
-    //         <tr key={item.id}>
-    //             <span className='course-field-left'>
-    //                 {item.name}
-    //             </span>
-    //             <span className='button-field-right'>
-    //                 <Tooltip placement="right" title={"Remove " + item.name}>
-    //                     <IconButton onClick={() => {changeColor(); handleCourseDelete(item)}}>
-    //                         <BackspaceIcon fontSize="medium"/>
-    //                     </IconButton>
-    //                 </Tooltip>
-    //             </span>
-    //         </tr>
-    //     )
-    // }
-
     const renderCourses = (term) => {
         const items = courses.filter((item) => item.term === term && item.boardId === `${user.userId}-board${boardID}`)
         return items.map((item) => (
@@ -369,9 +330,7 @@ const Planner = ({ user }) => {
 
     return (
         <div data-testid="planner">
-            {/* <ul> */}
                 {renderTerms()}
-            {/* </ul> */}
             <div className="container2">
                 <div className="vertical-center">
                     <button className="btn btn-secondary" onClick={() => {setAdding(true); handleTermCreation()}} disabled={isAdding}> 
@@ -383,8 +342,6 @@ const Planner = ({ user }) => {
                     </button>
                 </div>
             </div>
-            <h3>User ID: {user.userId}</h3>
-            <h3>Username:  {user.username}</h3>
             <br></br><br></br><br></br>
         </div>
     )

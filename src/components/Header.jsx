@@ -6,6 +6,7 @@ import Nav from 'react-bootstrap/Nav';
 import sfu from '../assets/sfu4.png';
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { Tooltip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { setBoard } from "../redux/board"
@@ -70,6 +71,9 @@ const Header = ({ user, signOut}) => {
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto">
+                    {/* <Navbar.Text>
+                        &nbsp;&nbsp;&nbsp;Hey! {user.username.length <= 15 ? <span>{user.username}</span>: <span>{user.username.slice(0,15)}...</span>}
+                    </Navbar.Text> */}
                     <Nav.Link href="https://www.sfu.ca/" target="_blank">About</Nav.Link>
                     <NavDropdown title="Contact" id="navbarScrollingDropdown">
                         <NavDropdown.Item href="https://www.github.com/09shir" target="_blank">
@@ -83,7 +87,9 @@ const Header = ({ user, signOut}) => {
                             Email
                         </NavDropdown.Item>
                     </NavDropdown>
-                    <Nav.Link onClick={signOut} target="_blank">Sign Out</Nav.Link>
+                    <Tooltip placement="bottom" title={<h6>User: {user.username}</h6>}>
+                        <Nav.Link onClick={signOut} target="_blank">Sign Out</Nav.Link>
+                    </Tooltip>
                 </Nav>
                 </Navbar.Collapse>
             </Container>
