@@ -28,6 +28,7 @@ const Header = ({ user, signOut}) => {
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-auto"></Nav>
+                <Nav expand="lg" className="me-auto"></Nav>
                 <Nav expand="lg" className="me-3">
                     <Nav.Link onClick={() => {dispatch(setBoard("1"))}}> 
                         <button className={`btn ${boardID === "1" ? 'btn-secondary' : ''}`}>
