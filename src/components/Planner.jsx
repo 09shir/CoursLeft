@@ -1,10 +1,10 @@
 // import React, { Component } from 'react'
 import React, { useState, useEffect } from 'react'
 import { getNextTerm, getCurrentTerm, getCurrentYear, sortTerms } from './functions/terms'
-import axios from "axios";
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import { IconButton } from '@mui/material';
 import { Tooltip } from '@mui/material';
+import loading from '../assets/loading.gif';
 import { useDispatch, useSelector } from 'react-redux';
 import { plannerRefresh } from "../redux/refresh";
 
@@ -45,6 +45,12 @@ const Planner = ({ user }) => {
         // refreshPlanner();
         uuidFromV4();
     },[boardID, refreshPlannerListener]);
+
+    useEffect(() => {
+        setLoading(true)
+        getTermsCoursesfromGraphQL();
+        uuidFromV4();
+    }, [boardID])
 
     const getTermsCoursesfromGraphQL = async () => {
         const data = await client.graphql({query: listTerms})
@@ -119,62 +125,6 @@ const Planner = ({ user }) => {
         setDeleting(false);
     }
 
-    const refreshPlanner = () => {
-        axios
-          .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/terms")
-          .then((res) => {
-
-            // get all terms objects on current board
-            let sameBoard = res.data.filter((item) => item.boardId === boardID)
-
-            // save term name/id pairs for deleting courses later
-            let tmpTermIdPair = []
-            sameBoard.forEach((term) => {
-                tmpTermIdPair.push([term.termName, term.termId])
-            })
-
-            setTermIdPair(tmpTermIdPair)
-
-            // get all term names
-            let terms = []
-            sameBoard.forEach((data) => {
-                terms.push(data.termName);
-            })
-
-            // sort terms
-            let sortedTerms = sortTerms(terms);
-
-            // -----------------------------------------------------------------
-            // from [summer 2023, fall 2023, ... fall 2024]
-
-            // to [[summer 2023, fall 2023, spring 2024]
-            //     [summer 2024, fall 2024]
-            // -----------------------------------------------------------------
-
-            let newTerms = []
-            let tmpTerms = []
-            for (let i = 0; i < Math.ceil(sortedTerms.length/3); i++){
-                for (let j = 0; j < 3; j++){
-                    if (sortedTerms[i*3+j] !== undefined){
-                        tmpTerms.push(sortedTerms[i*3+j])
-                    }
-                } 
-                newTerms.push(tmpTerms)
-                tmpTerms = []
-            }
-
-            setTerms(sortedTerms)
-            setTermsMapping(newTerms)
-            console.log(terms)
-          })
-          .catch((err) => console.log(err));
-        axios
-          .get("https://z4pw1ypqug.execute-api.us-west-2.amazonaws.com/prod/courses")
-          .then((res) => {console.log(res.data); setCourses(res.data.filter((course) => course.board === boardID))})
-          .catch((err) => console.log(err));
-        setLoading(false);
-    }
-
     const uuidFromV4 = () => {
         const newUuid = uuid();
         setUniqueId(newUuid);
@@ -183,16 +133,9 @@ const Planner = ({ user }) => {
     if (isLoading) {
         // return <div className="App">Loading...</div>;
         return (
-            <div className="container2">
-                <div className="vertical-center">
-                    <button className="btn btn-secondary" onClick={() => {setAdding(true); handleTermCreation()}} disabled={isAdding}> 
-                        {isAdding ? 'Adding...' : 'Add Term'}
-                    </button> 
-                    &nbsp;
-                    <button className="btn btn-secondary" onClick={() => {setDeleting(true); handleTermDeletion()}} disabled={isDeleting}> 
-                        {isDeleting ? 'Deleting...' : 'Delete Term'}
-                    </button>
-                </div>
+            <div className="App">
+                <br></br><br></br>
+                <img src={loading} height="50px" width="50px" alt="loading..." />
             </div>
         )
     }
@@ -213,7 +156,6 @@ const Planner = ({ user }) => {
         let lastTerm = ''
         if (terms.length === 0){
             lastTerm = getCurrentTerm() + ' ' + getCurrentYear()
-            console.log(lastTerm)
         }
         else{
             lastTerm = terms[terms.length-1]

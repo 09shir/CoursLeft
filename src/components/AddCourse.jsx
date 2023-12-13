@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { coursesList } from './functions/courses';
 import { parseFullNameToCourseID } from './functions/courseFunctions';
 import { predict, splitYearTerm } from './functions/termsPrediction';
-import axios from "axios";
 import {
     Button,
     Form,
@@ -70,7 +69,6 @@ const AddCourse = ({ user }) => {
             }
         }).then((res) => {
             let data = res.data.getBoard.terms.items
-            console.log(data)
             setTerms(data)
             setLoading(false)
         })
@@ -98,7 +96,6 @@ const AddCourse = ({ user }) => {
 		    ...values,
 		    courseName: e.target.value,
 	    }));
-        console.log(e.target.value)
         setCoursesList2(coursesList.filter(course => 
             (course.toLowerCase()).includes(e.target.value.toLowerCase())
         ))
@@ -199,8 +196,6 @@ const AddCourse = ({ user }) => {
             availableTerm: (values.courseName === '') ? [] : predictedTerms,
             pastTerms: (values.courseName === '') ? [] : pastTerms
         }))
-        
-        console.log(availabilitySection)
 
         setShowAvailability(true)
         setCheckingAva(false);
