@@ -150,6 +150,7 @@ export const onCreateTerm = /* GraphQL */ `
     onCreateTerm(filter: $filter, username: $username) {
       id
       name
+      credits
       board {
         id
         name
@@ -179,6 +180,7 @@ export const onUpdateTerm = /* GraphQL */ `
     onUpdateTerm(filter: $filter, username: $username) {
       id
       name
+      credits
       board {
         id
         name
@@ -208,6 +210,7 @@ export const onDeleteTerm = /* GraphQL */ `
     onDeleteTerm(filter: $filter, username: $username) {
       id
       name
+      credits
       board {
         id
         name
@@ -240,6 +243,7 @@ export const onCreateCourse = /* GraphQL */ `
       term {
         id
         name
+        credits
         createdAt
         updatedAt
         boardTermsId
@@ -265,6 +269,7 @@ export const onUpdateCourse = /* GraphQL */ `
       term {
         id
         name
+        credits
         createdAt
         updatedAt
         boardTermsId
@@ -290,6 +295,7 @@ export const onDeleteCourse = /* GraphQL */ `
       term {
         id
         name
+        credits
         createdAt
         updatedAt
         boardTermsId

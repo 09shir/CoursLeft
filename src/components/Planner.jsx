@@ -7,6 +7,7 @@ import { Tooltip } from '@mui/material';
 import loading from '../assets/loading.gif';
 import { useDispatch, useSelector } from 'react-redux';
 import { plannerRefresh } from "../redux/refresh";
+import Credit from './Credit';
 
 import { v4 as uuid} from 'uuid';
 
@@ -14,7 +15,8 @@ import { Amplify } from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
 import config from '../amplifyconfiguration.json'
 
-import { listTerms, getCoursesbyTerm } from '../graphql/queries'
+import { getCoursesbyTerm } from '../graphql/customQueries'
+import { listTerms } from '../graphql/queries'
 import { deleteCourse, createTerm, deleteTerm } from '../graphql/mutations'
 import { generateClient } from 'aws-amplify/api'
 
@@ -28,6 +30,7 @@ const Planner = ({ user }) => {
     const [terms, setTerms] = useState([]);
     const [termIdPair, setTermIdPair] = useState([]);       // [[termName, termId], [termName, termId], ... ] 
     const [termsMapping, setTermsMapping] = useState([]);
+    const [termNameToTermMapping, setTermNameToTermMapping] = useState({});
     const [courses, setCourses] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [isAdding, setAdding] = useState(false);
@@ -73,6 +76,13 @@ const Planner = ({ user }) => {
         sameBoard.forEach((term) => {
             terms.push(term.name);
         })
+
+        const termNameToTermMapping = {};
+        sameBoard.forEach(term => {
+            // get all term credits
+            termNameToTermMapping[term.name] = term;
+        })
+        setTermNameToTermMapping(termNameToTermMapping);
 
         // sort terms
         let sortedTerms = sortTerms(terms);
@@ -232,6 +242,11 @@ const Planner = ({ user }) => {
         ))
     }
 
+    const renderTermCredits = (termName) => {
+        const term = termNameToTermMapping[termName];
+        return <Credit term={term} />
+    }
+
     const renderTerms = () => {
         const items = [...termsMapping]
         return items.map((item) => (
@@ -239,8 +254,14 @@ const Planner = ({ user }) => {
                 {item.length >= 1 ? <table className="table table-bordered text-black float-left" style={{width: "30%"}}>
                     <thead>
                         <tr key={item[0]}>
+                            {/* <span>
+                                <h5>{item[0]}{renderTermCredits(item[0])}</h5>
+                            </span> */}
                             <span>
-                                <h5>{item[0]}</h5>
+                                <h5>
+                                    <span className="term-name-left">{item[0]}</span>
+                                    <span className="credit-info-right">{renderTermCredits(item[0])}</span>
+                                </h5>
                             </span>
                         </tr>
                         {renderCourses(item[0])}
@@ -250,7 +271,10 @@ const Planner = ({ user }) => {
                     <thead>
                         <tr key={item[1]}>
                             <span>
-                                <h5>{item[1]}</h5>
+                                <h5>
+                                    <span className="term-name-left">{item[1]}</span>
+                                    <span className="credit-info-right">{renderTermCredits(item[1])}</span>
+                                </h5>
                             </span>
                         </tr>
                         {renderCourses(item[1])}
@@ -260,7 +284,10 @@ const Planner = ({ user }) => {
                     <thead>
                         <tr key={item[2]}>
                             <span>
-                                <h5>{item[2]}</h5>
+                                <h5>
+                                    <span className="term-name-left">{item[2]}</span>
+                                    <span className="credit-info-right">{renderTermCredits(item[2])}</span>
+                                </h5>
                             </span>
                         </tr>
                         {renderCourses(item[2])}

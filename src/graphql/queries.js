@@ -88,6 +88,7 @@ export const getTerm = /* GraphQL */ `
     getTerm(id: $id) {
       id
       name
+      credits
       board {
         id
         name
@@ -109,34 +110,6 @@ export const getTerm = /* GraphQL */ `
     }
   }
 `;
-
-export const getCoursesbyTerm = /* GraphQL */ `
-  query GetTerm($id: ID!) {
-    getTerm(id: $id) {
-      id
-      courses {
-        items {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-export const getTermsbyBoard = /* GraphQL */ `
-  query MyQuery($id: ID!) {
-    getBoard(id: $id) {
-      terms {
-        items {
-          id
-          name
-        }
-      }
-    }
-  }
-`
-
 export const listTerms = /* GraphQL */ `
   query ListTerms(
     $filter: ModelTermFilterInput
@@ -147,6 +120,7 @@ export const listTerms = /* GraphQL */ `
       items {
         id
         name
+        credits
         createdAt
         updatedAt
         boardTermsId
@@ -166,6 +140,7 @@ export const getCourse = /* GraphQL */ `
       term {
         id
         name
+        credits
         createdAt
         updatedAt
         boardTermsId

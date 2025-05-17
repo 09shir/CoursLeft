@@ -150,6 +150,7 @@ export const createTerm = /* GraphQL */ `
     createTerm(input: $input, condition: $condition) {
       id
       name
+      credits
       board {
         id
         name
@@ -179,6 +180,7 @@ export const updateTerm = /* GraphQL */ `
     updateTerm(input: $input, condition: $condition) {
       id
       name
+      credits
       board {
         id
         name
@@ -208,6 +210,7 @@ export const deleteTerm = /* GraphQL */ `
     deleteTerm(input: $input, condition: $condition) {
       id
       name
+      credits
       board {
         id
         name
@@ -240,6 +243,7 @@ export const createCourse = /* GraphQL */ `
       term {
         id
         name
+        credits
         createdAt
         updatedAt
         boardTermsId
@@ -265,6 +269,7 @@ export const updateCourse = /* GraphQL */ `
       term {
         id
         name
+        credits
         createdAt
         updatedAt
         boardTermsId
@@ -290,6 +295,7 @@ export const deleteCourse = /* GraphQL */ `
       term {
         id
         name
+        credits
         createdAt
         updatedAt
         boardTermsId

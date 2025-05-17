@@ -121,3 +121,25 @@ body
   padding: 0px;
   float: right;
 }
+
+.term-name-left {
+  width: 45%;
+  padding: 0x;
+  float: left;
+}
+.credit-info-right {
+  width: 55%;
+  padding: 0px;
+  float: right;
+}
+
+.credit-input-field-left {
+  width: 30%;
+  padding: 0x;
+  float: left;
+}
+.credit-input-save-button-right {
+  width: 15%;
+  padding: 0px;
+  float: left;
+}

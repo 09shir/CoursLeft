@@ -29,6 +29,7 @@ type Term @model @auth(rules: [
   ]) {
   id: ID!
   name: String!
+  credits: Int
   board: Board @belongsTo
   courses: [Course] @hasMany
 }

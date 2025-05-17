@@ -12,6 +12,7 @@ import EventIcon from '@mui/icons-material/Event';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { IconButton } from '@mui/material';
 import { Tooltip } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { plannerRefresh } from "../redux/refresh"
@@ -22,7 +23,7 @@ import { Amplify } from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
 import config from '../amplifyconfiguration.json'
 
-import { getTermsbyBoard, getCoursesbyTerm } from '../graphql/queries'
+import { getTermsbyBoard, getCoursesbyTerm } from '../graphql/customQueries'
 import { createCourse } from '../graphql/mutations'
 import { generateClient } from 'aws-amplify/api'
 
@@ -259,6 +260,30 @@ const AddCourse = ({ user }) => {
                         {mappingCourses()}
                     </Form.Select>
                 </FormGroup>
+
+                {/* <FormGroup>
+                    <Form.Label>Course ID <SchoolIcon color="primary" fontSize="small"/></Form.Label>
+                    <Autocomplete
+                        disablePortal
+                        options={coursesList2 || []}
+                        getOptionLabel={(option) => option}
+                        value={values.courseName || null}
+                        onChange={(_, newValue) =>
+                        setValues({
+                            ...values,
+                            courseName: newValue ? parseFullNameToCourseID(newValue) : '',
+                        })
+                        }
+                        renderInput={(params) => (
+                        <option
+                            {...params}
+                            label="Select Course"
+                            placeholder="Choose a course"
+                        />
+                        )}
+                        sx={{ width: '100%', mt: 1 }}
+                    />
+                </FormGroup> */}
 
                 <br></br>
                 <FormGroup>
